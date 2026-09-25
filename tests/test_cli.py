@@ -43,7 +43,7 @@ def test_doctor_returns_nonzero_for_failed_check(monkeypatch) -> None:
 
 def test_plan_and_dry_run_are_read_only(monkeypatch) -> None:
     item = PlanItem(
-        "dev", "package", "git", PlanStatus.MISSING, PlanAction.INSTALL_PACKAGE, "apt package: git"
+        "dev", "apt", "package", "git", PlanStatus.MISSING, PlanAction.INSTALL_APT_PACKAGE, "git"
     )
     monkeypatch.setattr(cli, "build_plan", lambda context, scope: [item])
     applied: list[object] = []
@@ -57,7 +57,7 @@ def test_plan_and_dry_run_are_read_only(monkeypatch) -> None:
 
 def test_apply_requires_confirmation(monkeypatch) -> None:
     item = PlanItem(
-        "dev", "package", "git", PlanStatus.MISSING, PlanAction.INSTALL_PACKAGE, "apt package: git"
+        "dev", "apt", "package", "git", PlanStatus.MISSING, PlanAction.INSTALL_APT_PACKAGE, "git"
     )
     monkeypatch.setattr(cli, "build_plan", lambda context, scope: [item])
     monkeypatch.setattr(cli.typer, "confirm", lambda message: False)

@@ -8,7 +8,7 @@ Recommended workflow:
 2. Run `uv sync --all-groups`.
 3. Review the desired state with `uv run field config show`.
 4. Use `uv run field plan` (or `field plan dev` / `field plan wireless`) to compare it locally.
-5. Review `uv run field apply --dry-run`; use `uv run field apply --yes` only for approved package/service changes.
+5. Review `uv run field apply --dry-run`; use `uv run field apply --yes` only for approved local changes.
 6. Use `uv run field doctor` or `uv run field doctor wireless` to review local prerequisites.
 7. Use `uv run field inventory` when documenting the machine.
 
@@ -25,4 +25,6 @@ The composed X1 profile currently includes:
 - AI tooling intent for Claude Code and Codex;
 - Tailscale, Syncthing, Firefox profile intent, Obsidian, Magic Wormhole, editor preferences, and workstation OPSEC policy.
 
-The desired-state components deliberately separate reliable apt package names from intent that needs target-specific review. This iteration can install the listed apt packages and enable Docker's system service. It does not set up Python/uv, Docker Compose, eza, ProjectDiscovery httpx, Bleak, PlatformIO/esptool, AI tools, Tailscale login, Syncthing pairing, Firefox profiles, Obsidian vaults, Magic Wormhole pairing, VS Code/Zed vendor repositories, VPN/account login, secrets, devices, network settings, scan networks, or contact remote services.
+The desired-state components deliberately separate reliable installation paths from intent that needs target-specific review. This iteration can install listed apt packages; install the PlatformIO and esptool command-line tools through `uv tool`; enable/start Docker's system service and Syncthing's user service; and create only the dedicated `ai`, `research`, and `burner` Firefox profiles. Firefox changes are confined to a marked block in each dedicated profile's `user.js`, disabling password saving plus address and payment autofill. Existing files are retained, and no default/personal profile is touched.
+
+It does not set up Python/uv itself, Docker Compose, eza, ProjectDiscovery httpx, Bleak (a library rather than a reliable standalone tool), AI tools, Tailscale vendor setup or login, Syncthing pairing, Obsidian vaults, Magic Wormhole pairing, VS Code/Zed vendor repositories, VPN/account login, secrets, devices, network settings, scan networks, or contact remote services. Browser compartmentalization is a documented local policy; it does not restrict Gmail, banking, or social accounts.

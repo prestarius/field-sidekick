@@ -2,7 +2,7 @@
 
 `field-sidekick` is a declarative field-workstation management and security-engineering toolkit. The X1/Kali profile composes focused package and app components, then compares that intent with local state before any change is requested.
 
-## Iteration 3 commands
+## Iteration 4 commands
 
 ```bash
 uv run field --help
@@ -23,7 +23,22 @@ uv run field apply packages --yes
 
 The default profile is [`configs/profiles/x1-kali.yaml`](configs/profiles/x1-kali.yaml). It includes small component files for core, development, networking, wireless, security, ESP32, and apps. This makes it practical to review or plan a focused slice without copying a large package list into every profile.
 
-`field plan` is always read-only and reports `OK`, `MISSING`, `CHANGE`, and `SKIP`. `field apply` acts only on missing apt packages and disabled systemd services, supports `--dry-run`, and prompts before changing anything unless `--yes` is supplied. Unsupported platforms—including macOS development machines—show `SKIP`; they do not attempt package or service operations. Browser, account-authenticated AI, Tailscale, Syncthing pairing, and device configuration remain declarative-only in this iteration.
+`field plan` is always read-only and reports `OK`, `MISSING`, `CHANGE`, `SKIP`, and `MANUAL`, with an explicit provider column. `field apply` supports apt packages, `uv tool` CLI packages, system and user systemd services, and dedicated Firefox profile configuration. It supports `--dry-run` and prompts before changing anything unless `--yes` is supplied.
+
+Example excerpt:
+
+```text
+Scope      Provider      Kind          Name                Status   Action
+dev        apt           package       docker.io           MISSING  INSTALL_APT_PACKAGE
+dev        systemd       service       docker.service      CHANGE   ENABLE_SYSTEM_SERVICE
+esp32      uv-tool       python-tool   esptool             MISSING  INSTALL_PYTHON_TOOL
+syncthing  systemd-user  service       syncthing.service   CHANGE   ENABLE_USER_SERVICE
+firefox    firefox       profile       research            MISSING  CREATE_FIREFOX_PROFILE
+firefox    firefox       config        research privacy    CHANGE   CONFIGURE_FIREFOX_PREFERENCES
+tailscale  manual        service       tailscaled.service  MANUAL   NONE
+```
+
+`field apply --dry-run` renders this same plan and makes no changes. Unsupported platforms—including macOS development machines—show `SKIP`; they do not attempt package, service, or Firefox operations. Tailscale vendor-repository setup/login, Syncthing pairing, AI tools, editors, VPNs, secrets, and other account-bound tools remain `MANUAL`.
 
 ## Development
 
