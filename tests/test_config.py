@@ -9,8 +9,19 @@ def test_loads_x1_profile() -> None:
     profile = load_profile(Path("configs/profiles/x1-kali.yaml"))
     assert profile.name == "x1-kali-field"
     assert profile.modules["wireless"].settings["chipset"] == "MT7612U"
-    assert {component.name for component in profile.components} >= {"core", "dev", "wireless"}
-    assert any(package.name == "ripgrep" for package in profile.packages)
+
+    component_names = {component.name for component in profile.components}
+    assert component_names >= {
+        "core",
+        "dev",
+        "wireless",
+        "opsec",
+        "wormhole",
+        "editors",
+    }
+
+    package_names = {package.name for package in profile.packages}
+    assert {"ripgrep", "lsof", "strace", "rsync", "masscan", "blueman"} <= package_names
 
 
 def test_rejects_invalid_profile(tmp_path: Path) -> None:
