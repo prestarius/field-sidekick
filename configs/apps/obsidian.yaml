@@ -1,0 +1,4 @@
+name: obsidian
+description: Notes application intent only.
+capabilities:
+  - Obsidian vault remains user-managed; no vault content or sync is changed.

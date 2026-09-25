@@ -1,0 +1,15 @@
+name: dev
+description: Python and container development baseline.
+packages:
+  - {name: pipx}
+  - {name: gh}
+  - {name: docker.io}
+  - {name: lazygit}
+  - {name: git-delta}
+services:
+  - {name: docker.service}
+capabilities:
+  - Python >=3.13
+  - uv (Astral-managed installation)
+  - Docker Compose v2, after confirming the target Kali package mapping.
+

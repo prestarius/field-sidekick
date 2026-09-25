@@ -1,0 +1,12 @@
+name: security
+description: Web assessment and local Bluetooth tooling for authorized work.
+packages:
+  - {name: ffuf}
+  - {name: nuclei}
+  - {name: feroxbuster}
+  - {name: bluez}
+  - {name: blueman}
+capabilities:
+  - httpx, after confirming the correct Kali package mapping for the ProjectDiscovery tool.
+  - bleak for Python-based BLE inspection and scripting.
+  - Bluetooth local inspection tooling beyond BlueZ/Blueman, selected per target release.

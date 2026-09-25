@@ -3,6 +3,7 @@ from typer.testing import CliRunner
 from field_sidekick import cli
 from field_sidekick.cli import app
 from field_sidekick.core import CheckResult, CheckStatus
+from field_sidekick.plan import PlanAction, PlanItem, PlanStatus
 
 runner = CliRunner()
 
@@ -38,3 +39,28 @@ def test_doctor_returns_nonzero_for_failed_check(monkeypatch) -> None:
     result = runner.invoke(app, ["doctor", "dev"])
     assert result.exit_code == 1
     assert "FAIL" in result.output
+
+
+def test_plan_and_dry_run_are_read_only(monkeypatch) -> None:
+    item = PlanItem(
+        "dev", "package", "git", PlanStatus.MISSING, PlanAction.INSTALL_PACKAGE, "apt package: git"
+    )
+    monkeypatch.setattr(cli, "build_plan", lambda context, scope: [item])
+    applied: list[object] = []
+    monkeypatch.setattr(cli, "apply_plan", lambda *args: applied.append(args))
+    assert runner.invoke(app, ["plan", "dev"]).exit_code == 0
+    result = runner.invoke(app, ["apply", "dev", "--dry-run"])
+    assert result.exit_code == 0
+    assert "no changes were made" in result.output
+    assert not applied
+
+
+def test_apply_requires_confirmation(monkeypatch) -> None:
+    item = PlanItem(
+        "dev", "package", "git", PlanStatus.MISSING, PlanAction.INSTALL_PACKAGE, "apt package: git"
+    )
+    monkeypatch.setattr(cli, "build_plan", lambda context, scope: [item])
+    monkeypatch.setattr(cli.typer, "confirm", lambda message: False)
+    result = runner.invoke(app, ["apply", "dev"])
+    assert result.exit_code == 1
+    assert "Aborted" in result.output

@@ -1,0 +1,6 @@
+name: editors
+description: Preferred development editors for the field workstation.
+capabilities:
+  - Visual Studio Code as the primary editor.
+  - Zed as the secondary editor.
+  - Vendor installation sources remain declarative-only until their Kali mappings are reviewed.

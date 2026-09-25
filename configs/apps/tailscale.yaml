@@ -1,0 +1,5 @@
+name: tailscale
+description: Optional remote-access client managed through the vendor repository.
+capabilities:
+  - Tailscale client and user-approved connection; no automatic login or network changes.
+

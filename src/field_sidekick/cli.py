@@ -10,6 +10,7 @@ from field_sidekick.core import CommandRunner, LocalPlatform, SidekickContext
 from field_sidekick.doctor import collect_results, has_failures, render_doctor
 from field_sidekick.inventory import render_inventory
 from field_sidekick.modules import built_in_registry
+from field_sidekick.plan import apply_plan, build_plan, render_plan
 
 app = typer.Typer(
     name="field",
@@ -52,6 +53,54 @@ def inventory(
 ) -> None:
     """Print a concise local machine and tool summary."""
     render_inventory(console, context_for(profile))
+
+
+@app.command()
+def plan(
+    scope: str | None = typer.Argument(None, help="Optional scope: packages, dev, wireless, etc."),
+    profile: Path = PROFILE_OPTION,
+) -> None:
+    """Preview desired-state differences. This command is always read-only."""
+    try:
+        render_plan(
+            console,
+            build_plan(context_for(profile), scope),
+            f"field plan{f' {scope}' if scope else ''}",
+        )
+    except ValueError as error:
+        raise typer.BadParameter(str(error), param_hint="scope") from error
+
+
+@app.command()
+def apply(
+    scope: str | None = typer.Argument(None, help="Optional scope: packages, dev, wireless, etc."),
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="Show planned changes without executing."
+    ),
+    yes: bool = typer.Option(
+        False, "--yes", help="Confirm package/service changes without prompting."
+    ),
+    profile: Path = PROFILE_OPTION,
+) -> None:
+    """Apply only reliable package/service actions after explicit confirmation."""
+    context = context_for(profile)
+    try:
+        items = build_plan(context, scope)
+    except ValueError as error:
+        raise typer.BadParameter(str(error), param_hint="scope") from error
+    render_plan(console, items, f"field apply{f' {scope}' if scope else ''}")
+    actionable = [item for item in items if item.action != "NONE"]
+    if dry_run:
+        console.print("[dim]Dry run: no changes were made.[/dim]")
+        return
+    if not actionable:
+        console.print("[dim]Nothing to apply.[/dim]")
+        return
+    if not yes and not typer.confirm("Apply these workstation changes?"):
+        console.print("[yellow]Aborted; no changes were made.[/yellow]")
+        raise typer.Exit(1)
+    apply_plan(context, actionable)
+    console.print("[green]Requested changes applied. Run field plan to verify.[/green]")
 
 
 @modules_app.command("list")

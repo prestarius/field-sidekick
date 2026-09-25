@@ -1,0 +1,4 @@
+name: firefox
+description: Browser profile intent only.
+capabilities:
+  - "Firefox profiles: ai, research, burner. Profiles remain user-managed."
