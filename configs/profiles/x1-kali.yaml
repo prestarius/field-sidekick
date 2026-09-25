@@ -1,0 +1,37 @@
+profile: x1-kali
+target_os: kali
+modules:
+  system:
+    enabled: true
+  dev:
+    enabled: true
+    settings:
+      tools: [git, uv, docker]
+  network:
+    enabled: true
+  wireless:
+    enabled: true
+    settings:
+      adapter: "Alfa AWUS036ACM"
+      chipset: "MT7612U"
+      driver: "mt76"
+  ai:
+    enabled: true
+    settings:
+      tools: [claude-code, codex]
+  tailscale:
+    enabled: true
+  syncthing:
+    enabled: true
+  esp32:
+    enabled: true
+    settings:
+      boards: ["LILYGO T-Deck Plus", "LILYGO T-Embed CC1101 Plus"]
+  firefox:
+    enabled: true
+    settings:
+      profiles: [ai, research, burner]
+  obsidian:
+    enabled: true
+  opsec:
+    enabled: true

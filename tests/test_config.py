@@ -1,10 +1,10 @@
 from pathlib import Path
 
-from field_sidekick.config import load_config
+from field_sidekick.config import load_profile
 
 
-def test_loads_kali_config() -> None:
-    config = load_config(Path("configs/kali.yaml"))
-    assert config.name == "kali"
-    assert config.enabled is True
-    assert config.settings["update_policy"] == "manual"
+def test_loads_x1_profile() -> None:
+    config = load_profile(Path("configs/profiles/x1-kali.yaml"))
+    assert config.profile == "x1-kali"
+    assert config.target_os == "kali"
+    assert config.module("wireless").settings["chipset"] == "MT7612U"
