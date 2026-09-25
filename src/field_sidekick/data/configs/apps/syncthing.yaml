@@ -1,0 +1,8 @@
+name: syncthing
+description: Optional file synchronization managed by the user.
+packages:
+  - {name: syncthing}
+services:
+  - {name: syncthing.service, scope: user}
+capabilities:
+  - Syncthing user service and folder pairing; no automatic sharing or pairing.

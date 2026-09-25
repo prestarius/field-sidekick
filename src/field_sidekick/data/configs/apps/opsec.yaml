@@ -1,0 +1,10 @@
+name: opsec
+description: Local OPSEC intent for the Kali field workstation.
+capabilities:
+  - Proton VPN client intent; account login and credentials remain user-managed.
+  - age for local file encryption.
+  - GnuPG for local signing and encryption workflows.
+  - Bitwarden client intent; vault login and secrets remain user-managed.
+  - Browser compartmentalization across ai, research, and burner profiles.
+  - Do not use Gmail, banking, personal social accounts, or other private-life identities on Kali.
+  - Keep official identity and recovery flows on trusted daily-driver devices.

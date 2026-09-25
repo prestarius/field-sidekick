@@ -15,6 +15,12 @@ def test_help_is_available() -> None:
     assert "doctor" in result.output
 
 
+def test_version_is_available() -> None:
+    result = runner.invoke(app, ["--version"])
+    assert result.exit_code == 0
+    assert "0.1.0" in result.output
+
+
 def test_inventory_is_available() -> None:
     result = runner.invoke(app, ["inventory"])
     assert result.exit_code == 0
@@ -26,6 +32,35 @@ def test_modules_and_config_commands_are_available() -> None:
     result = runner.invoke(app, ["config", "show"])
     assert result.exit_code == 0
     assert "x1-kali-field" in result.output
+
+
+def test_config_path_and_validate_are_available(monkeypatch, tmp_path) -> None:
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
+    path = runner.invoke(app, ["config", "path"])
+    validation = runner.invoke(app, ["config", "validate"])
+    assert path.exit_code == 0
+    assert "User config directory:" in path.output
+    assert validation.exit_code == 0
+    assert "Valid: x1-kali-field" in validation.output
+
+
+def test_config_init_is_safe_by_default_and_force_replaces(monkeypatch, tmp_path) -> None:
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
+    assert runner.invoke(app, ["config", "init"]).exit_code == 0
+    profile = tmp_path / "field-sidekick/profiles/x1-kali.yaml"
+    profile.write_text("name: preserved\n", encoding="utf-8")
+    assert runner.invoke(app, ["config", "init"]).exit_code == 0
+    assert profile.read_text(encoding="utf-8") == "name: preserved\n"
+    assert runner.invoke(app, ["config", "init", "--force"]).exit_code == 0
+    assert "x1-kali-field" in profile.read_text(encoding="utf-8")
+
+
+def test_config_validate_reports_invalid_explicit_profile(tmp_path) -> None:
+    profile = tmp_path / "invalid.yaml"
+    profile.write_text("name: invalid\nunexpected: true\n", encoding="utf-8")
+    result = runner.invoke(app, ["config", "validate", "--profile", str(profile)])
+    assert result.exit_code != 0
+    assert "Invalid profile" in result.output
 
 
 def test_doctor_returns_nonzero_for_failed_check(monkeypatch) -> None:
