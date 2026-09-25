@@ -6,8 +6,8 @@ Accepted.
 
 ## Decision
 
-The application has a small core: `SidekickModule`, `Check`, `CheckResult`, `CheckStatus`, `CommandRunner`, `LocalPlatform`, and `ModuleRegistry`. Built-in modules are registered explicitly. YAML profiles describe the intended workstation, including modules that may not be implemented yet; they select implemented checks but are not applied in Iteration 2.
+The application has a small core: `SidekickModule`, `Check`, `CheckResult`, `CheckStatus`, `CommandRunner`, `LocalPlatform`, and `ModuleRegistry`. Built-in modules are registered explicitly. At the time of this decision, YAML profiles selected implemented checks but were not applied; later decisions add the current provider-backed desired-state behavior.
 
 ## Consequences
 
-Checks have stable status semantics and are easy to test with fake command/platform data. The design avoids entry points, plugin discovery, and a generic task framework until there is a concrete need. A future desired-state apply operation requires a separate ADR and explicit user confirmation.
+Checks have stable status semantics and are easy to test with fake command/platform data. The design avoids entry points, plugin discovery, and a generic task framework until there is a concrete need. Desired-state apply was subsequently added through separate decisions with explicit user confirmation.

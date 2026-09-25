@@ -1,0 +1,7 @@
+name: my-workstation
+description: Minimal starting point for a custom Kali/Debian workstation profile.
+target: Kali Linux
+include:
+  - ../packages/core.yaml
+modules:
+  system: {enabled: true, settings: {distribution: kali}}

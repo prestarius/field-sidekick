@@ -1,30 +1,11 @@
 # Workstation notes
 
-The target is a Kali Linux X1 field workstation, while the toolkit remains portable enough for development on another operating system. Linux-specific checks report `SKIP` or `WARN` on macOS rather than treating that development environment as broken.
+The bundled `x1-kali-field` profile targets a ThinkPad X1 running Kali Linux. It is a reviewable starting point, not a universal baseline and not a claim that every listed capability is installed automatically.
 
-Recommended workflow:
+On Kali/Debian, the profile can currently plan or apply selected apt packages, `uv tool` CLI tools, Docker's system service, Syncthing's user service, and dedicated Firefox profiles (`ai`, `research`, and `burner`). On other systems, unsupported provider entries show `SKIP`; they are not attempted.
 
-1. Install Python 3.13+ and uv.
-2. Run `uv sync --all-groups`.
-3. Review the desired state with `uv run field config show`.
-4. Use `uv run field plan` (or `field plan dev` / `field plan wireless`) to compare it locally.
-5. Review `uv run field apply --dry-run`; use `uv run field apply --yes` only for approved local changes.
-6. Use `uv run field doctor` or `uv run field doctor wireless` to review local prerequisites.
-7. Use `uv run field inventory` when documenting the machine.
+The profile also records intentional manual boundaries: vendor repository setup and login for Tailscale, Syncthing folder pairing, AI and editor installation/login, VPN configuration, Obsidian vaults, Magic Wormhole pairing, secrets, device setup, and network changes. Some security and wireless tools are represented as packages; field-sidekick does not run them or direct traffic at any target.
 
-## Desired-state coverage
+Firefox changes are limited to a marked block in `user.js` for the named dedicated profiles. The managed preferences disable password saving and address/payment autofill. Existing files are retained and unrelated/default profiles are not modified.
 
-The composed X1 profile currently includes:
-
-- core CLI and workstation utilities, including lsof, strace, file, and rsync;
-- development tooling, Docker, GitHub CLI, lazygit, and git-delta;
-- network inspection tools including Wireshark, tcpdump, nmap, arp-scan, bettercap, kismet, and masscan;
-- wireless tooling plus Alfa AWUS036ACM / MT7612U / mt76 intent;
-- authorized web/Bluetooth tooling including ffuf, nuclei, feroxbuster, BlueZ, Blueman, and Bleak intent;
-- ESP32 serial/development capabilities for T-Deck Plus and T-Embed CC1101 Plus;
-- AI tooling intent for Claude Code and Codex;
-- Tailscale, Syncthing, Firefox profile intent, Obsidian, Magic Wormhole, editor preferences, and workstation OPSEC policy.
-
-The desired-state components deliberately separate reliable installation paths from intent that needs target-specific review. This iteration can install listed apt packages; install the PlatformIO and esptool command-line tools through `uv tool`; enable/start Docker's system service and Syncthing's user service; and create only the dedicated `ai`, `research`, and `burner` Firefox profiles. Firefox changes are confined to a marked block in each dedicated profile's `user.js`, disabling password saving plus address and payment autofill. Existing files are retained, and no default/personal profile is touched.
-
-It does not set up Python/uv itself, Docker Compose, eza, ProjectDiscovery httpx, Bleak (a library rather than a reliable standalone tool), AI tools, Tailscale vendor setup or login, Syncthing pairing, Obsidian vaults, Magic Wormhole pairing, VS Code/Zed vendor repositories, VPN/account login, secrets, devices, network settings, scan networks, or contact remote services. Browser compartmentalization is a documented local policy; it does not restrict Gmail, banking, or social accounts.
+Use `field doctor`, `field inventory`, and `field plan` before applying a profile to a machine. The [X1/Kali walkthrough](examples/x1-kali-profile.md) explains how the bundled configuration is composed.
