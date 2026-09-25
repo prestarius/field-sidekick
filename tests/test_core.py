@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 
 from field_sidekick.core.config import ModuleConfig, ProfileConfig, load_profile
 from field_sidekick.core.models import Check, CheckResult, CheckStatus
@@ -23,7 +24,7 @@ def test_profile_rejects_unknown_top_level_fields(tmp_path: Path) -> None:
     path = tmp_path / "profile.yaml"
     path.write_text("profile: test\nunknown: true\n", encoding="utf-8")
 
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         load_profile(path)
 
 
