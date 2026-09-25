@@ -1,0 +1,6 @@
+name: ai
+description: Opt-in AI developer tooling.
+capabilities:
+  - Claude Code (user-authenticated installation)
+  - Codex (user-authenticated installation)
+

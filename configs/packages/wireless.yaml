@@ -1,0 +1,11 @@
+name: wireless
+description: Wireless adapter support and local tooling.
+packages:
+  - {name: iw}
+  - {name: aircrack-ng}
+  - {name: hcxdumptool}
+  - {name: mdk4}
+  - {name: macchanger}
+capabilities:
+  - Alfa AWUS036ACM adapter using MT7612U and the mt76 driver.
+
