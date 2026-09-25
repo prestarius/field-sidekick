@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "field-sidekick"
+version = "0.1.0"
+description = "Safe local health checks and inventory for a Kali Linux field workstation."
+readme = "README.md"
+requires-python = ">=3.13"
+license = { file = "LICENSE" }
+authors = [{ name = "field-sidekick contributors" }]
+dependencies = [
+  "pydantic>=2.10,<3",
+  "PyYAML>=6.0.2,<7",
+  "rich>=13.9,<14",
+  "typer>=0.15,<1",
+]
+
+[project.scripts]
+field = "field_sidekick.cli:app"
+
+[dependency-groups]
+dev = [
+  "pre-commit>=4.0,<5",
+  "pytest>=8.3,<9",
+  "ruff>=0.9,<1",
+]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/field_sidekick"]

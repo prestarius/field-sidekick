@@ -1,0 +1,5 @@
+name: kali
+enabled: true
+settings:
+  update_policy: manual
+  notes: "Declarative placeholder; v0.1 does not configure the operating system."
