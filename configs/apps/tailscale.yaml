@@ -1,5 +1,8 @@
 name: tailscale
 description: Optional remote-access client managed through the vendor repository.
+manual:
+  - {name: Tailscale client, command: tailscale, description: vendor repository bootstrap and login stay manual}
+services:
+  - {name: tailscaled.service, managed: false}
 capabilities:
   - Tailscale client and user-approved connection; no automatic login or network changes.
-

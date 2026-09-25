@@ -1,4 +1,6 @@
 name: firefox
-description: Browser profile intent only.
-capabilities:
-  - "Firefox profiles: ai, research, burner. Profiles remain user-managed."
+description: Dedicated compartmentalized Firefox profiles for the Kali workstation.
+firefox_profiles:
+  - {name: ai}
+  - {name: research}
+  - {name: burner}

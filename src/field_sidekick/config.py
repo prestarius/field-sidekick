@@ -33,6 +33,37 @@ class ServiceSpec(BaseModel):
     model_config = ConfigDict(extra="forbid")
     name: str
     enabled: bool = True
+    scope: str = "system"
+    managed: bool = True
+
+
+class PythonToolSpec(BaseModel):
+    """A Python CLI distributed as an installable uv tool."""
+
+    model_config = ConfigDict(extra="forbid")
+    name: str
+    package: str | None = None
+
+    @property
+    def package_name(self) -> str:
+        return self.package or self.name
+
+
+class FirefoxProfileSpec(BaseModel):
+    """A dedicated Firefox profile owned by this workstation profile."""
+
+    model_config = ConfigDict(extra="forbid")
+    name: str
+    manage_privacy_preferences: bool = True
+
+
+class ManualSpec(BaseModel):
+    """A visible capability that is detected but deliberately never installed."""
+
+    model_config = ConfigDict(extra="forbid")
+    name: str
+    command: str | None = None
+    description: str = "user-managed"
 
 
 class Component(BaseModel):
@@ -42,7 +73,10 @@ class Component(BaseModel):
     name: str
     description: str = ""
     packages: list[PackageSpec] = Field(default_factory=list)
+    python_tools: list[PythonToolSpec] = Field(default_factory=list)
     services: list[ServiceSpec] = Field(default_factory=list)
+    firefox_profiles: list[FirefoxProfileSpec] = Field(default_factory=list)
+    manual: list[ManualSpec] = Field(default_factory=list)
     capabilities: list[str] = Field(default_factory=list)
 
 

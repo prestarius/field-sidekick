@@ -13,6 +13,13 @@
 - Explicit, dry-run capable, confirmed apt package and systemd service actions only.
 - Apps, user authentication, device setup, and uncertain package mappings remain declarative-only.
 
+## Iteration 4 — providers and local workstation bootstrap (complete)
+
+- Explicit apt, uv-tool, systemd, systemd-user, Firefox, and manual providers.
+- Actionable Docker package/service, Syncthing package/user service, PlatformIO and esptool tools.
+- Dedicated `ai`, `research`, and `burner` Firefox profiles with scoped local autofill/password-saving preferences.
+- Manual detection for Tailscale; vendor setup and login are never automated.
+
 ## Later candidates
 
 - Documented, opt-in profiles for workstation applications.

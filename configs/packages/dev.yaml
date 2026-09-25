@@ -8,8 +8,9 @@ packages:
   - {name: git-delta}
 services:
   - {name: docker.service}
+python_tools:
+  - {name: platformio}
 capabilities:
   - Python >=3.13
   - uv (Astral-managed installation)
   - Docker Compose v2, after confirming the target Kali package mapping.
-
