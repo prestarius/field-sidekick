@@ -8,4 +8,4 @@ packages:
   - {name: arp-scan}
   - {name: bettercap}
   - {name: kismet}
-
+  - {name: masscan}
