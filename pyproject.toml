@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "field-sidekick"
 version = "0.1.0"
-description = "Safe local health checks and inventory for a Kali Linux field workstation."
+description = "Declarative field-workstation management and security-engineering toolkit."
 readme = "README.md"
 requires-python = ">=3.13"
 license = { file = "LICENSE" }
@@ -40,3 +40,4 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/field_sidekick"]
+dev-mode-dirs = ["src"]

@@ -1,14 +1,13 @@
 # Architecture
 
-`field-sidekick` uses a small application core and a future-facing module boundary:
+`field-sidekick` uses a small application core and explicit built-in modules:
 
 ```text
-CLI -> read-only services (doctor, inventory) -> local OS/tool metadata
-                 |
-                 +-> config loader -> YAML declarations
-                 +-> modules/ (future, opt-in integrations)
+CLI -> profile loader -> module registry -> system/dev/network/wireless checks
+                                      |               |
+                                      +-> common results +-> local platform/command boundary
 ```
 
-The CLI owns user interaction. `doctor` and `inventory` collect only local information. `config` validates declarative YAML but does not apply it. `modules` is intentionally empty in v0.1 so integrations can be added with isolated permissions, documented behavior, and tests.
+The CLI owns user interaction. `Profile` validates desired state and selects enabled modules. `CheckResult` normalizes `PASS`, `WARN`, `FAIL`, and `SKIP`; the registry is an explicit list, not dynamic plugin discovery. `CommandRunner` and `LocalPlatform` are small seams for deterministic tests and portable behavior.
 
-No module may introduce network scanning, exploitation, credential collection, persistence, or automatic system changes without an explicit future design decision and user opt-in.
+Iteration 2 checks only local state. A future apply workflow must have an explicit design, clear preview, confirmation, rollback considerations, and user opt-in. No module may introduce network scanning, exploitation, credential collection, persistence, or automatic network changes without a separate security decision.

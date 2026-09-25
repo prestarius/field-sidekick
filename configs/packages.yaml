@@ -1,5 +1,0 @@
-name: packages
-enabled: true
-settings:
-  policy: inventory-only
-  notes: "Future package recommendations must remain explicit and opt-in."
