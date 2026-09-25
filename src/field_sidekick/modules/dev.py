@@ -18,11 +18,7 @@ class DevModule(SidekickModule):
 
     def _binary(self, command: str, *, required: bool) -> CheckResult:
         path = self.runner.which(command)
-        status = (
-            CheckStatus.PASS
-            if path
-            else (CheckStatus.FAIL if required else CheckStatus.WARN)
-        )
+        status = CheckStatus.PASS if path else (CheckStatus.FAIL if required else CheckStatus.WARN)
         return CheckResult(f"dev.{command}", command, status, path or "not found")
 
     def _docker_daemon(self) -> CheckResult:
