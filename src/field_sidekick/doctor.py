@@ -1,63 +1,39 @@
-"""Safe, read-only local health checks."""
+"""Doctor aggregation and Rich rendering."""
 
-import platform
-import shutil
-from dataclasses import dataclass
-from pathlib import Path
+from collections.abc import Iterable
 
 from rich.console import Console
 from rich.table import Table
 
-
-@dataclass(frozen=True)
-class Check:
-    name: str
-    available: bool
-    detail: str
+from field_sidekick.core import CheckResult, CheckStatus, SidekickContext
+from field_sidekick.core.registry import ModuleRegistry
 
 
-def _command_check(name: str, command: str) -> Check:
-    path = shutil.which(command)
-    return Check(name, path is not None, path or "not found")
+def collect_results(
+    registry: ModuleRegistry, context: SidekickContext, module: str | None = None
+) -> list[CheckResult]:
+    modules = [registry.get(module)] if module else registry.enabled(context.profile)
+    return [result for item in modules for result in item.run(context)]
 
 
-def wifi_interfaces() -> list[str]:
-    """Return likely Wi-Fi interfaces based on local Linux interface names."""
-    sys_net = Path("/sys/class/net")
-    if not sys_net.is_dir():
-        return []
-    return sorted(
-        interface.name
-        for interface in sys_net.iterdir()
-        if (interface / "wireless").exists() or interface.name.startswith(("wl", "wlan"))
-    )
+def has_failures(results: Iterable[CheckResult]) -> bool:
+    return any(result.status is CheckStatus.FAIL for result in results)
 
 
-def collect_checks() -> list[Check]:
-    """Collect only local, non-mutating state; do not query services or networks."""
-    os_detail = f"{platform.system()} {platform.release()}"
-    interfaces = wifi_interfaces()
-    return [
-        Check("Operating system", platform.system() == "Linux", os_detail),
-        _command_check("Python", "python3"),
-        _command_check("Git", "git"),
-        _command_check("Docker", "docker"),
-        _command_check("Tailscale", "tailscale"),
-        _command_check("Syncthing", "syncthing"),
-        Check("Wi-Fi interfaces", bool(interfaces), ", ".join(interfaces) or "none detected"),
-    ]
-
-
-def render_doctor(console: Console) -> None:
-    """Render safe local checks in a compact table."""
-    table = Table(title="field-sidekick doctor")
+def render_doctor(
+    console: Console, results: list[CheckResult], title: str = "field doctor"
+) -> None:
+    table = Table(title=title)
+    table.add_column("Module")
     table.add_column("Check")
     table.add_column("Status")
     table.add_column("Detail")
-    for check in collect_checks():
-        status = "[green]OK[/green]" if check.available else "[yellow]Not available[/yellow]"
-        table.add_row(check.name, status, check.detail)
+    for result in results:
+        table.add_row(result.module, result.name, result.status.rich_label, result.detail)
     console.print(table)
-    console.print(
-        "[dim]Checks are local and read-only; no services or networks were contacted.[/dim]"
+    counts = {status: sum(item.status is status for item in results) for status in CheckStatus}
+    summary = "  ".join(
+        f"{status.value}: {counts[status]}" for status in CheckStatus if counts[status]
     )
+    console.print(f"[dim]{summary or 'No checks selected.'}[/dim]")
+    console.print("[dim]Checks are local and read-only; desired state is not applied.[/dim]")

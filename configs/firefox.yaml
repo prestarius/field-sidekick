@@ -1,5 +1,0 @@
-name: firefox
-enabled: true
-settings:
-  profile_policy: documented-only
-  notes: "No browser profile is created or changed by v0.1."
