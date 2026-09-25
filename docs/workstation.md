@@ -12,4 +12,17 @@ Recommended workflow:
 6. Use `uv run field doctor` or `uv run field doctor wireless` to review local prerequisites.
 7. Use `uv run field inventory` when documenting the machine.
 
-The desired-state components deliberately separate reliable apt package names from intent that needs target-specific review. This iteration can install the listed apt packages and enable Docker's system service. It does not set up Python/uv, Docker Compose, eza, ProjectDiscovery httpx, PlatformIO/esptool, AI tools, Tailscale login, Syncthing pairing, Firefox profiles, Obsidian vaults, devices, network settings, scan networks, or contact remote services.
+## Desired-state coverage
+
+The composed X1 profile currently includes:
+
+- core CLI and workstation utilities, including lsof, strace, file, and rsync;
+- development tooling, Docker, GitHub CLI, lazygit, and git-delta;
+- network inspection tools including Wireshark, tcpdump, nmap, arp-scan, bettercap, kismet, and masscan;
+- wireless tooling plus Alfa AWUS036ACM / MT7612U / mt76 intent;
+- authorized web/Bluetooth tooling including ffuf, nuclei, feroxbuster, BlueZ, Blueman, and Bleak intent;
+- ESP32 serial/development capabilities for T-Deck Plus and T-Embed CC1101 Plus;
+- AI tooling intent for Claude Code and Codex;
+- Tailscale, Syncthing, Firefox profile intent, Obsidian, Magic Wormhole, editor preferences, and workstation OPSEC policy.
+
+The desired-state components deliberately separate reliable apt package names from intent that needs target-specific review. This iteration can install the listed apt packages and enable Docker's system service. It does not set up Python/uv, Docker Compose, eza, ProjectDiscovery httpx, Bleak, PlatformIO/esptool, AI tools, Tailscale login, Syncthing pairing, Firefox profiles, Obsidian vaults, Magic Wormhole pairing, VS Code/Zed vendor repositories, VPN/account login, secrets, devices, network settings, scan networks, or contact remote services.
