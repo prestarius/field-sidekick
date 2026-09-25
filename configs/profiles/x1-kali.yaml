@@ -13,9 +13,11 @@ include:
   - ../apps/syncthing.yaml
   - ../apps/firefox.yaml
   - ../apps/obsidian.yaml
+  - ../apps/opsec.yaml
+  - ../apps/wormhole.yaml
+  - ../apps/editors.yaml
 modules:
   system: {enabled: true, settings: {distribution: kali, update_policy: manual}}
   dev: {enabled: true, settings: {python: ">=3.13"}}
   network: {enabled: true, settings: {require_default_route: true}}
   wireless: {enabled: true, settings: {adapter: Alfa AWUS036ACM, chipset: MT7612U}}
-
