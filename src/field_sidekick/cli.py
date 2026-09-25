@@ -1,6 +1,7 @@
 """Command-line interface for field-sidekick."""
 
 from pathlib import Path
+from typing import Annotated
 
 import typer
 from rich.console import Console
@@ -23,6 +24,7 @@ config_app = typer.Typer(help="Inspect desired-state configuration.")
 app.add_typer(modules_app, name="modules")
 app.add_typer(config_app, name="config")
 console = Console()
+DEFAULT_PROFILE_PATH = default_profile_path()
 
 
 def _context(profile_path: Path):
@@ -35,16 +37,14 @@ def _context(profile_path: Path):
 
 @app.command()
 def doctor(
-    module: str | None = typer.Argument(
-        None,
-        help="Optional module: system, dev, network, wireless",
-    ),
-    profile_path: Path = typer.Option(
-        default_profile_path(),
-        "--profile",
-        exists=True,
-        readable=True,
-    ),
+    module: Annotated[
+        str | None,
+        typer.Argument(help="Optional module: system, dev, network, wireless"),
+    ] = None,
+    profile_path: Annotated[
+        Path,
+        typer.Option("--profile", exists=True, readable=True),
+    ] = DEFAULT_PROFILE_PATH,
 ) -> None:
     """Run local, non-destructive workstation checks."""
     _, _, registry = _context(profile_path)
@@ -59,12 +59,10 @@ def doctor(
 
 @app.command()
 def inventory(
-    profile_path: Path = typer.Option(
-        default_profile_path(),
-        "--profile",
-        exists=True,
-        readable=True,
-    ),
+    profile_path: Annotated[
+        Path,
+        typer.Option("--profile", exists=True, readable=True),
+    ] = DEFAULT_PROFILE_PATH,
 ) -> None:
     """Print a concise local machine and enabled-module summary."""
     _, platform, registry = _context(profile_path)
@@ -73,12 +71,10 @@ def inventory(
 
 @modules_app.command("list")
 def modules_list(
-    profile_path: Path = typer.Option(
-        default_profile_path(),
-        "--profile",
-        exists=True,
-        readable=True,
-    ),
+    profile_path: Annotated[
+        Path,
+        typer.Option("--profile", exists=True, readable=True),
+    ] = DEFAULT_PROFILE_PATH,
 ) -> None:
     """List implemented modules enabled by the selected profile."""
     profile, platform, registry = _context(profile_path)
@@ -91,12 +87,10 @@ def modules_list(
 
 @config_app.command("show")
 def config_show(
-    profile_path: Path = typer.Option(
-        default_profile_path(),
-        "--profile",
-        exists=True,
-        readable=True,
-    ),
+    profile_path: Annotated[
+        Path,
+        typer.Option("--profile", exists=True, readable=True),
+    ] = DEFAULT_PROFILE_PATH,
 ) -> None:
     """Show the validated desired-state profile."""
     profile = load_profile(profile_path)
