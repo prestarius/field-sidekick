@@ -1,8 +1,8 @@
 """Small subprocess boundary that is easy to mock in tests."""
 
-from dataclasses import dataclass
 import shutil
 import subprocess
+from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
