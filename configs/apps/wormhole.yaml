@@ -1,0 +1,5 @@
+name: wormhole
+description: One-off peer-to-peer file transfer capability.
+capabilities:
+  - Magic Wormhole for ad-hoc transfers between trusted devices.
+  - Pairing remains explicit and user-approved; no unattended receiving or sharing.
