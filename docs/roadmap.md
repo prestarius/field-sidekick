@@ -1,27 +1,43 @@
 # Roadmap
 
-## Iteration 2 — declarative checks (complete)
+The roadmap describes intended direction, not release commitments. Each expansion should preserve explicit review, local-only scope, and safety boundaries.
 
-- Desired-state X1/Kali profile and explicit module registry.
-- Local `system`, `dev`, `network`, and `wireless` checks.
-- No desired-state application or offensive automation.
+## Iteration 2 — Declarative checks (complete)
 
-## Iteration 3 — composed desired state and safe apply foundation (complete)
+- Added the desired-state X1/Kali profile and explicit module registry.
+- Added local `system`, `dev`, `network`, and `wireless` checks.
 
-- Composable, validated profile components for packages and application intent.
-- Read-only `plan` for full or scoped desired-state comparison.
-- Explicit, dry-run capable, confirmed apt package and systemd service actions only.
-- Apps, user authentication, device setup, and uncertain package mappings remain declarative-only.
+## Iteration 3 — Composed desired state and safe apply foundation (complete)
 
-## Iteration 4 — providers and local workstation bootstrap (complete)
+- Added composable, validated profile components and read-only planning.
+- Added confirmed, dry-run-capable apt package and systemd service actions.
 
-- Explicit apt, uv-tool, systemd, systemd-user, Firefox, and manual providers.
-- Actionable Docker package/service, Syncthing package/user service, PlatformIO and esptool tools.
-- Dedicated `ai`, `research`, and `burner` Firefox profiles with scoped local autofill/password-saving preferences.
-- Manual detection for Tailscale; vendor setup and login are never automated.
+## Iteration 4 — Providers and local workstation bootstrap (complete)
 
-## Later candidates
+- Added explicit apt, uv-tool, systemd, systemd-user, Firefox, and manual providers.
+- Added actionable Docker, Syncthing, PlatformIO, esptool, and scoped Firefox profile support.
 
-- Documented, opt-in profiles for workstation applications.
-- Exportable local reports and hardware inventory.
-- Additional modules only after a scoped design decision and safety review.
+## Iteration 5 — Documentation & public readiness (complete)
+
+- Rebuilt user and contributor documentation around the current CLI and configuration model.
+- Added community files, issue templates, and a public-readiness review.
+
+## Iteration 6 — Installation / packaging / first public release
+
+- Define supported installation paths and release/versioning process.
+- Validate package metadata and publish only after release checks are repeatable.
+
+## Iteration 7 — Workstation app providers
+
+- Evaluate additional narrowly scoped, opt-in local app providers.
+- Keep vendor repositories, accounts, and remote enrollment manual unless separately designed and reviewed.
+
+## Iteration 8 — Hardware & field diagnostics
+
+- Expand read-only hardware, adapter, and field-readiness diagnostics.
+- Prefer exportable local reports over automatic remediation.
+
+## Iteration 9 — Profiles / overlays / reproducibility
+
+- Design profile overlays and reproducible profile selection without obscuring final intent.
+- Add validation and documentation before introducing composition beyond the current include model.

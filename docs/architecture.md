@@ -1,15 +1,22 @@
 # Architecture
 
-`field-sidekick` uses a small application core and explicit built-in modules:
+Field-sidekick has a small application core and explicit built-in boundaries:
 
 ```text
-CLI -> composed profile loader -> module registry -> system/dev/network/wireless checks
-              |                         |               |
-              +-> plan builder ---------+               +-> local platform/command boundary
-                         |
-                         +-> apt / uv-tool / systemd / Firefox providers -> explicit apply
+CLI -> profile loader -> typed profile + components -> plan builder -> providers -> local system
+ |             |                 |                       |
+ |             +-> YAML          +-> module registry      +-> rendered plan / confirmed apply
+ +-> doctor, inventory
 ```
 
-The CLI owns user interaction. A `Profile` validates its `include` list and each typed component; package and service records therefore have one clear source of truth. `CheckResult` normalizes readiness checks, while `PlanItem` normalizes desired-state differences as `OK`, `MISSING`, `CHANGE`, and `SKIP`. The registry is an explicit list, not dynamic plugin discovery. `CommandRunner` and `LocalPlatform` are small seams for deterministic tests and portable behavior.
+The CLI owns command parsing, rendering, and confirmation. `load_profile()` reads a top-level profile and the component files named by its `include` list; Pydantic validates both layers and rejects unknown fields. Component order is preserved, making the plan stable and reviewable.
 
-Iteration 4 retains a deliberately small provider layer, not dynamic plugin discovery. Apt owns Kali/Debian packages; `uv tool` owns Python CLIs with a real entry point; systemd and systemd-user own enabled/running service state; Firefox owns only the named dedicated profiles and a marked block in their `user.js`; the manual provider detects but never installs vendor/account-bound capabilities. Planning is read-only and distinguishes `OK`, `MISSING`, `CHANGE`, `SKIP`, and `MANUAL`. Apply requires `--yes` or an interactive confirmation; `--dry-run` never executes a command. No provider logs in, changes credentials, enrolls a remote network, pairs Syncthing, or changes an unrelated Firefox profile.
+The diagnostic side is separate from desired-state application. The explicit module registry contains `system`, `dev`, `network`, and `wireless` checks. `CommandRunner` and `LocalPlatform` provide narrow seams for deterministic tests and graceful behavior off the Linux target.
+
+The planner converts component records into `PlanItem` values with `OK`, `MISSING`, `CHANGE`, `SKIP`, or `MANUAL` status. Planning is always read-only. Application receives only plan items with a non-`NONE` action and is gated by an interactive confirmation or `--yes`.
+
+Providers are intentionally concrete rather than dynamically discovered: apt, `uv tool`, systemd, systemd-user, Firefox, and manual detection. This is not a plugin framework. Adding a provider means adding a small, testable built-in capability with a clear platform check and safety boundary; see [development](development.md).
+
+Firefox handles only explicitly named profiles and a marked block in their `user.js`. The manual provider exposes intent or local detection but never installs vendor software, logs in, enrolls a service, pairs devices, or changes remote state.
+
+Related decisions are recorded in [`docs/decisions/`](decisions/).
