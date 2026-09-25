@@ -17,6 +17,9 @@ packages:
   - {name: zip}
   - {name: unzip}
   - {name: p7zip-full}
+  - {name: lsof}
+  - {name: strace}
+  - {name: file}
+  - {name: rsync}
 capabilities:
   - Modern ls (eza), installed only after package availability is confirmed for the target Kali release.
-
