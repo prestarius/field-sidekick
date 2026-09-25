@@ -50,10 +50,7 @@ def render_doctor(
 
     console.print(table)
 
-    counts = {
-        status: sum(result.status == status for result in results)
-        for status in CheckStatus
-    }
+    counts = {status: sum(result.status == status for result in results) for status in CheckStatus}
     console.print(
         f"[dim]PASS {counts[CheckStatus.PASS]} · "
         f"WARN {counts[CheckStatus.WARN]} · "
