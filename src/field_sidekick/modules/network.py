@@ -30,11 +30,7 @@ class NetworkModule(SidekickModule):
 
         if self.platform.is_macos and self.runner.which("ifconfig"):
             result = self.runner.run("ifconfig", "-l")
-            names = (
-                [name for name in result.stdout.split() if name != "lo0"]
-                if result.ok
-                else []
-            )
+            names = [name for name in result.stdout.split() if name != "lo0"] if result.ok else []
             return CheckResult(
                 "network.interfaces",
                 "Network interfaces",
@@ -62,11 +58,7 @@ class NetworkModule(SidekickModule):
                 "no supported route command",
             )
 
-        detail = (
-            result.stdout.splitlines()[0]
-            if result.stdout
-            else (result.stderr or "not found")
-        )
+        detail = result.stdout.splitlines()[0] if result.stdout else (result.stderr or "not found")
         return CheckResult(
             "network.default-route",
             "Default route",
