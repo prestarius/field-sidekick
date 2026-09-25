@@ -1,0 +1,10 @@
+name: esp32
+description: ESP32 serial and firmware-development tools.
+packages:
+  - {name: tio}
+  - {name: minicom}
+python_tools:
+  - {name: esptool}
+capabilities:
+  - T-Deck Plus
+  - T-Embed CC1101 Plus

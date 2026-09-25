@@ -10,6 +10,17 @@ readme = "README.md"
 requires-python = ">=3.13"
 license = { file = "LICENSE" }
 authors = [{ name = "field-sidekick contributors" }]
+keywords = ["kali", "security-engineering", "workstation", "configuration"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: System Administrators",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: System :: Installation/Setup",
+]
 dependencies = [
   "pydantic>=2.10,<3",
   "PyYAML>=6.0.2,<7",
@@ -19,6 +30,12 @@ dependencies = [
 
 [project.scripts]
 field = "field_sidekick.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/prestarius/field-sidekick"
+Documentation = "https://github.com/prestarius/field-sidekick/tree/main/docs"
+Issues = "https://github.com/prestarius/field-sidekick/issues"
+Changelog = "https://github.com/prestarius/field-sidekick/blob/main/CHANGELOG.md"
 
 [dependency-groups]
 dev = [
@@ -41,3 +58,14 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/field_sidekick"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src/field_sidekick",
+  "/tests",
+  "/docs",
+  "/README.md",
+  "/LICENSE",
+  "/CHANGELOG.md",
+  "/pyproject.toml",
+]
