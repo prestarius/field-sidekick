@@ -23,15 +23,11 @@ class SystemModule(SidekickModule):
         elif self.platform.is_linux:
             status = CheckStatus.WARN
             detail = (
-                f"Linux ({self.platform.distro_id or 'unknown distro'}) "
-                f"{self.platform.release}"
+                f"Linux ({self.platform.distro_id or 'unknown distro'}) {self.platform.release}"
             )
         elif self.platform.is_macos:
             status = CheckStatus.WARN
-            detail = (
-                f"macOS {self.platform.release}; supported for development, "
-                "Kali is the target"
-            )
+            detail = f"macOS {self.platform.release}; supported for development, Kali is the target"
         else:
             status = CheckStatus.WARN
             detail = f"{self.platform.system} {self.platform.release}; Kali is the target"
