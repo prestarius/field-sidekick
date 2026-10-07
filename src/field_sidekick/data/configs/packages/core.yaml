@@ -1,0 +1,25 @@
+name: core
+description: Everyday command-line workstation tools.
+packages:
+  - {name: git}
+  - {name: curl}
+  - {name: wget}
+  - {name: tmux}
+  - {name: jq}
+  - {name: yq}
+  - {name: ripgrep}
+  - {name: fd-find}
+  - {name: fzf}
+  - {name: bat}
+  - {name: tree}
+  - {name: btop}
+  - {name: ncdu}
+  - {name: zip}
+  - {name: unzip}
+  - {name: p7zip-full}
+  - {name: lsof}
+  - {name: strace}
+  - {name: file}
+  - {name: rsync}
+capabilities:
+  - Modern ls (eza), installed only after package availability is confirmed for the target Kali release.

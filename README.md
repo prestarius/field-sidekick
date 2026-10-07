@@ -12,6 +12,33 @@ The current actionable target is Kali/Debian Linux. macOS and other systems are 
 
 Requirements: Python 3.13+ and [uv](https://docs.astral.sh/uv/).
 
+### Install
+
+When `field-sidekick` is available on PyPI, install the release with:
+
+```bash
+uv tool install field-sidekick
+```
+
+Until PyPI publishing is enabled, install the public main branch directly from GitHub:
+
+```bash
+uv tool install git+https://github.com/prestarius/field-sidekick.git
+field --version
+```
+
+Create a local, editable starter configuration and inspect it. This does not need a repository checkout:
+
+```bash
+field config init
+field config validate
+field doctor
+field plan
+field apply --dry-run
+```
+
+For development from a checkout:
+
 ```bash
 git clone https://github.com/prestarius/field-sidekick.git
 cd field-sidekick
@@ -45,18 +72,23 @@ Do not use `--yes` until you have reviewed the selected scope and understand eac
 
 ## Configuration
 
+The package includes a read-only X1/Kali template. `field config init` copies it into your user config directory (normally `~/.config/field-sidekick` on Linux) without replacing existing YAML. Use `field config path` to see the exact directory and active profile.
+
+Profile selection is deliberately small: `--profile PATH` uses an explicit file; `--profile NAME` resolves `profiles/NAME.yaml` in user configuration first, then the bundled templates. Without `--profile`, a user `profiles/x1-kali.yaml` takes precedence over the bundled X1/Kali template.
+
 The bundled profile is [`configs/profiles/x1-kali.yaml`](configs/profiles/x1-kali.yaml). Its `include` list composes focused YAML components from:
 
 - [`configs/packages/`](configs/packages/) for apt package groups;
 - [`configs/apps/`](configs/apps/) for app, service, Firefox, and manual intent;
 - [`configs/profiles/`](configs/profiles/) for top-level profiles.
 
-Create a profile by copying the minimal example, point its `include` paths at your components, then use it with `--profile`:
+Create a profile under your user configuration directory, point its `include` paths at your components, then use it with `--profile`:
 
 ```bash
-cp docs/examples/minimal-profile.yaml configs/profiles/my-workstation.yaml
-uv run field plan --profile configs/profiles/my-workstation.yaml
-uv run field apply --profile configs/profiles/my-workstation.yaml --dry-run
+field config init
+${EDITOR:-vi} ~/.config/field-sidekick/profiles/x1-kali.yaml
+field plan --profile x1-kali
+field apply --profile x1-kali --dry-run
 ```
 
 Component paths are resolved relative to the profile file. All profile and component fields are validated; unknown fields are rejected. Read [configuration](docs/configuration.md) before changing a profile.
@@ -77,13 +109,17 @@ Details, platform conditions, and boundaries are in [providers](docs/providers.m
 ## CLI overview
 
 ```bash
-uv run field --help
-uv run field doctor [system|dev|network|wireless]
-uv run field inventory
-uv run field modules list
-uv run field config show [--profile PATH]
-uv run field plan [SCOPE] [--profile PATH]
-uv run field apply [SCOPE] [--dry-run] [--yes] [--profile PATH]
+field --version
+field --help
+field doctor [system|dev|network|wireless]
+field inventory
+field modules list
+field config path [--profile PATH_OR_NAME]
+field config init [--force]
+field config validate [--profile PATH_OR_NAME]
+field config show [--profile PATH_OR_NAME]
+field plan [SCOPE] [--profile PATH_OR_NAME]
+field apply [SCOPE] [--dry-run] [--yes] [--profile PATH_OR_NAME]
 ```
 
 `SCOPE` is a component name from the selected profile (for example `dev`, `wireless`, or `firefox`). `packages` is also accepted as an alias for package entries across all components. See the [CLI reference](docs/cli.md).
@@ -105,7 +141,7 @@ Read [development](docs/development.md) and [CONTRIBUTING.md](CONTRIBUTING.md) b
 
 ## Status and roadmap
 
-The project has a working profile loader, local diagnostics, read-only planning, and a deliberately narrow set of provider-backed actions. Packaging, broader workstation providers, hardware diagnostics, and profile overlays are planned next. See the [roadmap](docs/roadmap.md) and [architecture](docs/architecture.md).
+The project has a working profile loader, installable CLI, local diagnostics, read-only planning, and a deliberately narrow set of provider-backed actions. Broader workstation providers, hardware diagnostics, and profile overlays remain future work. See the [roadmap](docs/roadmap.md) and [architecture](docs/architecture.md).
 
 ## License
 

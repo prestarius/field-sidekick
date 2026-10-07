@@ -1,11 +1,17 @@
 """Command-line interface for the declarative Field Sidekick toolkit."""
 
-from pathlib import Path
+from typing import Annotated
 
 import typer
 from rich.console import Console
 
-from field_sidekick.config import DEFAULT_PROFILE_PATH, load_profile
+from field_sidekick import __version__
+from field_sidekick.config import (
+    copy_bundled_configs,
+    load_profile,
+    resolve_profile,
+    user_config_dir,
+)
 from field_sidekick.core import CommandRunner, LocalPlatform, SidekickContext
 from field_sidekick.doctor import collect_results, has_failures, render_doctor
 from field_sidekick.inventory import render_inventory
@@ -16,17 +22,42 @@ app = typer.Typer(
     name="field",
     help="Declarative field-workstation management and security-engineering toolkit.",
     no_args_is_help=True,
+    invoke_without_command=True,
 )
 modules_app = typer.Typer(help="Inspect built-in workstation modules.")
 config_app = typer.Typer(help="Inspect declarative workstation profiles.")
 app.add_typer(modules_app, name="modules")
 app.add_typer(config_app, name="config")
 console = Console()
-PROFILE_OPTION = typer.Option(DEFAULT_PROFILE_PATH, "--profile", exists=True, readable=True)
+PROFILE_OPTION = typer.Option(
+    None,
+    "--profile",
+    help="Profile path or name; names prefer user config over bundled templates.",
+)
 
 
-def context_for(profile_path: Path) -> SidekickContext:
-    return SidekickContext(load_profile(profile_path), CommandRunner(), LocalPlatform())
+def profile_for(value: str | None):
+    try:
+        return resolve_profile(value)
+    except ValueError as error:
+        raise typer.BadParameter(str(error), param_hint="--profile") from error
+
+
+def context_for(profile: str | None) -> SidekickContext:
+    return SidekickContext(load_profile(profile_for(profile)), CommandRunner(), LocalPlatform())
+
+
+@app.callback()
+def main(
+    version: Annotated[
+        bool,
+        typer.Option("--version", is_eager=True, help="Show the installed field-sidekick version."),
+    ] = False,
+) -> None:
+    """Manage a small, declarative field workstation profile."""
+    if version:
+        console.print(__version__)
+        raise typer.Exit()
 
 
 @app.command()
@@ -34,7 +65,7 @@ def doctor(
     module: str | None = typer.Argument(
         None, help="Optional module: system, dev, network, wireless."
     ),
-    profile: Path = PROFILE_OPTION,
+    profile: str | None = PROFILE_OPTION,
 ) -> None:
     """Run local, non-destructive checks against the selected desired-state profile."""
     context = context_for(profile)
@@ -49,7 +80,7 @@ def doctor(
 
 @app.command()
 def inventory(
-    profile: Path = PROFILE_OPTION,
+    profile: str | None = PROFILE_OPTION,
 ) -> None:
     """Print a concise local machine and tool summary."""
     render_inventory(console, context_for(profile))
@@ -58,7 +89,7 @@ def inventory(
 @app.command()
 def plan(
     scope: str | None = typer.Argument(None, help="Optional scope: packages, dev, wireless, etc."),
-    profile: Path = PROFILE_OPTION,
+    profile: str | None = PROFILE_OPTION,
 ) -> None:
     """Preview desired-state differences. This command is always read-only."""
     try:
@@ -80,7 +111,7 @@ def apply(
     yes: bool = typer.Option(
         False, "--yes", help="Confirm package/service changes without prompting."
     ),
-    profile: Path = PROFILE_OPTION,
+    profile: str | None = PROFILE_OPTION,
 ) -> None:
     """Apply only reliable package/service actions after explicit confirmation."""
     context = context_for(profile)
@@ -112,10 +143,41 @@ def list_modules() -> None:
 
 @config_app.command("show")
 def show_config(
-    profile: Path = PROFILE_OPTION,
+    profile: str | None = PROFILE_OPTION,
 ) -> None:
     """Show desired state; this command never applies it."""
-    console.print_json(load_profile(profile).model_dump_json(indent=2))
+    console.print_json(load_profile(profile_for(profile)).model_dump_json(indent=2))
+
+
+@config_app.command("path")
+def config_path(profile: str | None = PROFILE_OPTION) -> None:
+    """Show the user configuration directory and resolved active profile."""
+    console.print(f"User config directory: {user_config_dir()}")
+    console.print(f"Active profile: {profile_for(profile)}")
+
+
+@config_app.command("init")
+def config_init(
+    force: bool = typer.Option(False, "--force", help="Replace existing starter YAML files."),
+) -> None:
+    """Copy the bundled X1/Kali starter configuration to the user config directory."""
+    destination = user_config_dir()
+    copied = copy_bundled_configs(destination, force=force)
+    if copied:
+        console.print(f"Copied {len(copied)} starter file(s) to {destination}")
+    else:
+        console.print(f"No files changed in {destination}; use --force to replace starter files.")
+
+
+@config_app.command("validate")
+def validate_config(profile: str | None = PROFILE_OPTION) -> None:
+    """Validate the selected profile and component composition without applying it."""
+    selected = profile_for(profile)
+    try:
+        loaded = load_profile(selected)
+    except ValueError as error:
+        raise typer.BadParameter(str(error), param_hint="--profile") from error
+    console.print(f"Valid: {loaded.name} ({selected})")
 
 
 if __name__ == "__main__":

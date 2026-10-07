@@ -4,10 +4,19 @@
 
 Use Python 3.13 or newer and uv. The project currently applies state only on Kali/Debian Linux; it is still safe to inspect configuration and develop on macOS or another system.
 
+When PyPI publishing is available:
+
 ```bash
-git clone https://github.com/prestarius/field-sidekick.git
-cd field-sidekick
-uv sync --all-groups
+uv tool install field-sidekick
+```
+
+Until then, install from the public repository:
+
+```bash
+uv tool install git+https://github.com/prestarius/field-sidekick.git
+field --version
+field config init
+field config validate
 ```
 
 ## Inspect before changing
@@ -15,10 +24,10 @@ uv sync --all-groups
 The bundled profile is the X1/Kali configuration. Start with read-only commands:
 
 ```bash
-uv run field config show
-uv run field doctor
-uv run field inventory
-uv run field plan
+field config show
+field doctor
+field inventory
+field plan
 ```
 
 `doctor` performs local readiness checks. `inventory` prints a concise machine/tool summary. `plan` compares the profile with local state and reports `OK`, `MISSING`, `CHANGE`, `SKIP`, and `MANUAL` rows.
@@ -38,8 +47,8 @@ The `packages` scope includes package entries across all components. Other scope
 `field apply --dry-run` renders the same plan and performs no action:
 
 ```bash
-uv run field apply --dry-run
-uv run field apply dev --dry-run
+field apply --dry-run
+field apply dev --dry-run
 ```
 
 On a supported target, apply asks for confirmation unless `--yes` is supplied:
@@ -52,11 +61,11 @@ Review the table first. `MANUAL` and `SKIP` entries cannot be applied. After app
 
 ## Use your own profile
 
-Copy the minimal profile into `configs/profiles/`, adapt its component includes, then pass it explicitly:
+Run `field config init`, adapt the local profile and components, then pass it explicitly by path or name:
 
 ```bash
-cp docs/examples/minimal-profile.yaml configs/profiles/my-workstation.yaml
-uv run field plan --profile configs/profiles/my-workstation.yaml
+field config init
+field plan --profile x1-kali
 ```
 
 See [configuration](configuration.md) and the [X1/Kali walkthrough](examples/x1-kali-profile.md).

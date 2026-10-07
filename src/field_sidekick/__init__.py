@@ -1,3 +1,8 @@
 """Safe local workstation checks for field-sidekick."""
 
-__version__ = "0.1.0"
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("field-sidekick")
+except PackageNotFoundError:  # pragma: no cover - direct source-tree import only
+    __version__ = "0+unknown"

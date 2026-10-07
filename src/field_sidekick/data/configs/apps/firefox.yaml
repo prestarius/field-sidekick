@@ -1,0 +1,6 @@
+name: firefox
+description: Dedicated compartmentalized Firefox profiles for the Kali workstation.
+firefox_profiles:
+  - {name: ai}
+  - {name: research}
+  - {name: burner}

@@ -1,0 +1,11 @@
+name: networking
+description: Passive local inspection and network troubleshooting tools.
+packages:
+  - {name: wireshark}
+  - {name: tshark}
+  - {name: tcpdump}
+  - {name: nmap}
+  - {name: arp-scan}
+  - {name: bettercap}
+  - {name: kismet}
+  - {name: masscan}

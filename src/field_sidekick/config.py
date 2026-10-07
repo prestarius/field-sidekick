@@ -1,10 +1,17 @@
 """Typed, composable desired-state configuration for field workstations."""
 
+import os
+import shutil
+import sys
+from importlib.resources import files
 from pathlib import Path
 from typing import Any
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
+
+PACKAGE_CONFIGS = files("field_sidekick").joinpath("data", "configs")
+DEFAULT_PROFILE_NAME = "x1-kali"
 
 
 class ModuleConfig(BaseModel):
@@ -103,24 +110,87 @@ class Profile(BaseModel):
         ]
 
 
-DEFAULT_PROFILE_PATH = Path("configs/profiles/x1-kali.yaml")
+def user_config_dir() -> Path:
+    """Return the per-user configuration directory without creating it."""
+    if sys.platform == "darwin":
+        base = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / "Library/Application Support"))
+    elif os.name == "nt":
+        base = Path(os.environ.get("APPDATA", Path.home() / "AppData/Roaming"))
+    else:
+        base = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
+    return base / "field-sidekick"
 
 
-def load_profile(path: Path) -> Profile:
+def package_profile(name: str = DEFAULT_PROFILE_NAME):
+    """Return a bundled, read-only profile resource by short name."""
+    return PACKAGE_CONFIGS.joinpath("profiles", f"{name.removesuffix('.yaml')}.yaml")
+
+
+def _profile_name(value: str) -> str:
+    return value.removesuffix(".yaml")
+
+
+def resolve_profile(value: str | Path | None = None) -> Path | Any:
+    """Resolve an explicit path/name or the active user/bundled default profile.
+
+    Explicit filesystem paths take precedence. Named profiles look in the user
+    configuration directory first, then in the bundled templates. With no
+    argument, a user ``profiles/x1-kali.yaml`` overrides the bundled default.
+    """
+    if value is not None:
+        candidate = Path(value).expanduser()
+        if candidate.is_file():
+            return candidate
+        name = _profile_name(str(value))
+    else:
+        name = DEFAULT_PROFILE_NAME
+
+    user_profile = user_config_dir() / "profiles" / f"{name}.yaml"
+    if user_profile.is_file():
+        return user_profile
+    bundled = package_profile(name)
+    if bundled.is_file():
+        return bundled
+    raise ValueError(
+        f"Profile {value!r} was not found. Use a path, add it under "
+        f"{user_config_dir() / 'profiles'}, or run 'field config init'."
+    )
+
+
+def copy_bundled_configs(destination: Path, force: bool = False) -> list[Path]:
+    """Copy packaged starter configs locally, refusing to replace files by default."""
+    destination = destination.expanduser()
+    copied: list[Path] = []
+    for group in ("apps", "packages", "profiles"):
+        for source in PACKAGE_CONFIGS.joinpath(group).iterdir():
+            if not source.name.endswith(".yaml"):
+                continue
+            relative = Path(group) / source.name
+            target = destination / relative
+            if target.exists() and not force:
+                continue
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with source.open("rb") as source_file, target.open("wb") as target_file:
+                shutil.copyfileobj(source_file, target_file)
+            copied.append(target)
+    return copied
+
+
+def load_profile(path: Path | Any) -> Profile:
     """Read a profile and its local component files without applying state."""
-    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    if not isinstance(data, dict):
-        raise ValueError(f"Expected a mapping in {path}")
     try:
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        if not isinstance(data, dict):
+            raise ValueError(f"Expected a mapping in {path}")
         profile = Profile.model_validate(data)
         components = []
         for relative_path in profile.includes:
-            component_path = path.parent / relative_path
+            component_path = path.parent.joinpath(relative_path)
             component_data = yaml.safe_load(component_path.read_text(encoding="utf-8")) or {}
             if not isinstance(component_data, dict):
                 raise ValueError(f"Expected a mapping in {component_path}")
             components.append(Component.model_validate(component_data))
         profile.components = components
         return profile
-    except ValidationError as error:
+    except (OSError, ValidationError) as error:
         raise ValueError(f"Invalid profile {path}: {error}") from error
